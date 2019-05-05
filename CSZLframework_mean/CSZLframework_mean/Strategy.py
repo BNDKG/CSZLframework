@@ -3,22 +3,32 @@
 import pandas as pd
 import numpy as np
 
+import FeatureEnvironment
 
-class BaseStrategy(object):
-    
-    pass
+import models
+import portfolio
 
-class LightgbmStrategy(BaseStrategy):
-    
+class Strategy(object):
+    '''
+    这里策略需要输入，数据，模型，资产管理方式
 
-
-    pass
-
-
-
-
-if __name__ == '__main__':
-
+    输出交易列表集
+    '''
     
 
-    dasda=1
+
+    def __init__(self):
+        self.PDataSet=FeatureEnvironment.FEbase
+        self.Pmodel=models.LGBmodel
+        self.portfolio=portfolio.portfoliobase
+
+    def Predictall(self):
+        getlist=self.Pmodel.predict(self,self.PDataSet.create())
+
+        finallist=self.portfolio.run(getlist)
+
+        return finallist
+
+
+
+

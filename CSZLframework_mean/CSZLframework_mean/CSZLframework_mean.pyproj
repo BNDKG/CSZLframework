@@ -22,13 +22,28 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BackTesting.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CSZLframework_mean.py" />
+    <Compile Include="Display.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FeatureEnvironment.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="portfolio.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Predict.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Strategy.py">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="models\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
