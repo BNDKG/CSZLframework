@@ -7,12 +7,10 @@ import BackTesting
 import Strategy
 import Display
 
+import FeatureEnvironment
+import models
 
-
-
-if __name__ == '__main__':
-
-    
+def backtesting():
 
     curstr=Strategy.Strategy()
     dsp2=Display.Display
@@ -24,3 +22,17 @@ if __name__ == '__main__':
     dasda=1
 
 
+def train():
+    #这里加入重新fe选项
+    FE_dataset_name=FeatureEnvironment.FE1.create()
+
+    models.LGBmodel.train(FE_dataset_name)
+
+    ddwd=1
+
+
+
+if __name__ == '__main__':
+
+    train()
+    backtesting()

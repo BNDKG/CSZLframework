@@ -18,12 +18,12 @@ class Strategy(object):
 
 
     def __init__(self):
-        self.PDataSet=FeatureEnvironment.FEbase
+        self.PDataSetCreater=FeatureEnvironment.FE1
         self.Pmodel=models.LGBmodel
         self.portfolio=portfolio.portfoliobase
 
     def Predictall(self):
-        getlist=self.Pmodel.predict(self,self.PDataSet.create())
+        getlist=self.Pmodel.predict(self,self.PDataSetCreater.create())
 
         finallist=self.portfolio.run(getlist)
 

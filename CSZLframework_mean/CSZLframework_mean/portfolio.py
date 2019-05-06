@@ -4,4 +4,4 @@
 class portfoliobase(object):
     """description of class"""
     def run(list):
-        return 1
+        return list
