@@ -26,10 +26,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CSZLframework_mean.py" />
+    <Compile Include="Dataget.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Display.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FeatureEnvironment.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FileIO.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="models.py">

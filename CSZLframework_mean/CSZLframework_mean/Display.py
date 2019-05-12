@@ -1,10 +1,18 @@
 #coding=utf-8
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 
 class Display(object):
     """description of class"""
 
-    def scatter(self):
-        showsource=pd.read_csv('data2020mixd.csv',index_col=0,header=0)
+    def __init__(self):
+        pass
+
+    def scatter(self,path):
+        showsource=pd.read_csv(path,index_col=0,header=0)
         databuffer=showsource['trade_date'].unique()
 
         for curdata in databuffer:
@@ -38,7 +46,7 @@ class Display(object):
             #plt.pause(2)
             plt.show()
 
-    def plotall(self):
+    def plotall(self,path):
 
         #days,show1,show2=get_allchange()
 
@@ -49,7 +57,7 @@ class Display(object):
 
         #lgb_train_2('2017')
 
-        days,show3=self.show_all_rate()
+        days,show3=self.show_all_rate(path)
 
         #plt.plot(days,show1,c='blue',label="000001")
         #plt.plot(days,show2,c='red',label="399006")
@@ -59,8 +67,8 @@ class Display(object):
 
         plt.show()
 
-    def show_all_rate(self):
-        showsource=pd.read_csv('data2020mixd.csv',index_col=0,header=0)
+    def show_all_rate(self,path):
+        showsource=pd.read_csv(path,index_col=0,header=0)
         databuffer=showsource['trade_date'].unique()
 
         changer=[]
@@ -102,3 +110,32 @@ class Display(object):
         #plt.show()
 
         return days,show
+
+    def show_today(self):
+
+        show=pd.read_csv('todaypredict.csv',index_col=0,header=0)
+        datamax=show['trade_date'].max()
+        #datamax=20190408
+
+        show=show[show['trade_date']==datamax]
+
+        show=show[['ts_code','0','9','mix']]
+
+        #ascending表示升降序
+        b=show.sort_values(by="mix" , ascending=False) 
+        c=show.sort_values(by="9" , ascending=False) 
+        final_mix=b.head(20)
+        final_9=c.head(20)
+
+        arr=[600461,603389,300384]
+        final_have=show[show['ts_code'].isin(arr)]
+
+        pd.set_option('display.max_columns', None)
+        print('综合成绩')
+        print(final_mix)
+        print('极限成绩')
+        print(final_9)
+        print('当前拥有')
+        print(final_have)
+
+        fsfef=1

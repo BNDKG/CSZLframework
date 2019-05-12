@@ -7,32 +7,62 @@ import BackTesting
 import Strategy
 import Display
 
-import FeatureEnvironment
+import FeatureEnvironment as FE
 import models
+import Dataget
+import Display
+
 
 def backtesting():
+    #刷新数据库
+    #Dataget.Dataget.updatedaily('20190404','20190510')
+    #选择日期
 
-    curstr=Strategy.Strategy()
-    dsp2=Display.Display
+    dataset_train=Dataget.Dataget.getDataSet('20160101','20190101')
+    dataset_test=Dataget.Dataget.getDataSet('20190301','20190510')
 
-    bt=BackTesting.BackTesting(curstr,dsp2)
+    #选择特征工程
+    cur_fe=FE.FE1()
 
-    bt.do()
+    FE_train=cur_fe.create(dataset_train)
+    FE_test=cur_fe.create(dataset_test)
 
-    dasda=1
+    #选择模型
+    cur_model=models.LGBmodel()
+    #训练模型
+    Lgb_model=cur_model.train(FE_train)
+    #进行回测
+    finalpath=cur_model.predict(FE_test,Lgb_model)
+    
+    #展示类
+    dis=Display.Display()
+
+    dis.plotall(finalpath)
 
 
-def train():
-    #这里加入重新fe选项
-    FE_dataset_name=FeatureEnvironment.FE1.create()
 
-    models.LGBmodel.train(FE_dataset_name)
+def ztry():
+    Dataget.Dataget.get_codeanddate_feature()
 
-    ddwd=1
+    Dataget.Dataget.real_get_change()
 
+    #选择特征工程
+    cur_fe=FE.FE1()    
+    cur_fe.real_FE2()
 
+    #选择模型
+    cur_model=models.LGBmodel()
+    cur_model.real_lgb_predict('DataSet20160101to20190101_FE1_LGBmodel.pkl')
+
+    #展示类
+    dis=Display.Display()
+    dis.show_today()
+
+    asdad=1
 
 if __name__ == '__main__':
 
-    train()
+
+
+    ztry()
     backtesting()
