@@ -27,6 +27,8 @@ class Dataget(object):
         except Exception as e:
             #没有的情况下list为空
             date_list_old=[]
+            df_test=pd.DataFrame(columns=('ts_code','trade_date','open','high','low','close','pre_close','change','pct_chg','vol','amount'))
+
 
         #读取token
         f = open('token.txt')
@@ -99,7 +101,7 @@ class Dataget(object):
                 print('数据集生成完成')
             except Exception as e:
                 #没有的情况下list为空
-                print("错误，请先调用getDataSet或检查其他问题")
+                print("错误，请先调用updatedaily或检查其他问题")
         return filename
 
     def get_codeanddate_feature():
@@ -239,3 +241,99 @@ class Dataget(object):
         df_history.to_csv("real_now.csv")
 
         dsfesf=1
+
+    def updatedaily_adj_factor(start_date,end_date):
+
+        #增量更新
+
+        #输出路径为"./Database/Dailydata.csv"
+
+        #检查目录是否存在
+        FileIO.FileIO.mkdir('./Database')
+
+        #读取历史数据防止重复
+        try:
+            df_test=pd.read_csv('./Database/Daily_adj_factor.csv',index_col=0,header=0)
+            date_list_old=df_test['trade_date'].unique().astype(str)
+
+            xxx=1
+        except Exception as e:
+            #没有的情况下list为空
+            date_list_old=[]
+            df_test=pd.DataFrame(columns=('ts_code','trade_date','adj_factor'))
+
+
+        #读取token
+        f = open('token.txt')
+        token = f.read()     #将txt文件的所有内容读入到字符串str中
+        f.close()
+
+        pro = ts.pro_api(token)
+        date=pro.query('trade_cal', start_date=start_date, end_date=end_date)
+
+        date=date[date["is_open"]==1]
+        bufferlist=date["cal_date"]
+
+        get_list=bufferlist[~bufferlist.isin(date_list_old)].values
+        first_date=get_list[0]
+        next_date=get_list[1:]
+
+        df_all=pro.adj_factor(ts_code='', trade_date=first_date)
+
+        zcounter=0
+        zall=get_list.shape[0]
+        for singledate in next_date:
+            zcounter+=1
+            print(zcounter*100/zall)
+
+            dec=5
+            while(dec>0):
+                try:
+                    time.sleep(1)
+                    df = pro.adj_factor(ts_code='', trade_date=singledate)
+
+                    df_all=pd.concat([df_all,df])
+
+                    #df_last
+                    #print(df_all)
+                    break
+
+                except Exception as e:
+                    dec-=1
+                    time.sleep(5-dec)
+
+            if(dec==0):
+                fsefe=1
+
+        df_all=pd.concat([df_all,df_test])
+        df_all[["trade_date"]]=df_all[["trade_date"]].astype(int)
+        df_all.sort_values("trade_date",inplace=True)
+
+        df_all=df_all.reset_index(drop=True)
+
+        df_all.to_csv('./Database/Daily_adj_factor.csv')
+
+        dsdfsf=1
+
+
+    def getDataSet_adj_factor(start_date,end_date):
+        #获取某日到某日的数据,并保存到temp中
+        filename='./temp/'+'Daily_adj_factor'+start_date+'to'+end_date+'.csv'
+
+        #检查目录是否存在
+        FileIO.FileIO.mkdir('./temp/')
+        #检查文件是否存在
+        if(os.path.exists(filename)==False):       
+            try:
+                df_get=pd.read_csv('./Database/Daily_adj_factor.csv',index_col=0,header=0)
+            
+                df_get=df_get[df_get['trade_date']>int(start_date)]
+                df_get=df_get[df_get['trade_date']<int(end_date)]
+                df_get=df_get.reset_index(drop=True)
+                df_get.to_csv(filename)
+                xxx=1
+                print('数据集生成完成')
+            except Exception as e:
+                #没有的情况下list为空
+                print("错误，请先调用updatedaily_adj_factor或检查其他问题")
+        return filename
