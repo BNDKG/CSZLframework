@@ -1,9 +1,14 @@
 #coding=utf-8
 import pandas as pd
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
+from numpy import *
 
+plt.ioff()
+#matplotlib.use('TkAgg')
+#plt.ion()
 
 class Display(object):
     """description of class"""
@@ -67,6 +72,8 @@ class Display(object):
 
         plt.show()
 
+        input()
+
     def show_all_rate(self,path):
         showsource=pd.read_csv(path,index_col=0,header=0)
         databuffer=showsource['trade_date'].unique()
@@ -82,7 +89,7 @@ class Display(object):
         
 
             #b=cur_show[cur_show['mix']>0.40]
-            average=b.head(10)['tomorrow_chg'].mean()
+            average=b.head(1)['tomorrow_chg'].mean()
             changer.append(average)
 
             adwda=1

@@ -138,7 +138,7 @@ class LGBmodel(BaseModel):
             y_fit, y_val = y_train[train_index], y_train[test_index]
 
             lgb_model = lgb.LGBMClassifier(max_depth=-1,
-                                           n_estimators=400,
+                                           n_estimators=300,
                                            learning_rate=0.05,
                                            num_leaves=2**8-1,
                                            colsample_bytree=0.6,
