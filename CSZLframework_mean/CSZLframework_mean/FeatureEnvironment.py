@@ -31,6 +31,9 @@ class FEbase(object):
     def core(self,df_all,Data_adj_name=''):
         return df_all
 
+    def real_FE():
+        return 0
+
 class FE1(FEbase):
     def __init__(self):
         pass
@@ -251,7 +254,6 @@ class FE1(FEbase):
         df_all.to_csv('today_train.csv')
         dwdw=1
 
-
 class FE2(FEbase):
     def __init__(self):
         pass
@@ -292,34 +294,34 @@ class FE2(FEbase):
 
         #===================================================================================================================================#
 
-        #复权后价格
+        ##复权后价格
         df_all['real_price']=df_all['close']*df_all['adj_factor']
         
-        #30日最低比值
-        xxx=df_all.groupby('ts_code')['real_price'].rolling(30).min().reset_index()
-        xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
-        xxx.drop(['ts_code'],axis=1,inplace=True)
+        ##30日最低比值
+        #xxx=df_all.groupby('ts_code')['real_price'].rolling(30).min().reset_index()
+        #xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
+        #xxx.drop(['ts_code'],axis=1,inplace=True)
         
-        df_all=df_all.join(xxx, lsuffix='', rsuffix='_30min')
-        #bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
-        #ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
-        df_all['30_pct']=(df_all['real_price']-df_all['real_price_30min'])/df_all['real_price_30min']
-        df_all['30_pct_rank']=df_all.groupby('trade_date')['30_pct'].rank(pct=True)
-        df_all['30_pct_rank']=df_all['30_pct_rank']*10//1
+        #df_all=df_all.join(xxx, lsuffix='', rsuffix='_30min')
+        ##bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
+        ##ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
+        #df_all['30_pct']=(df_all['real_price']-df_all['real_price_30min'])/df_all['real_price_30min']
+        #df_all['30_pct_rank']=df_all.groupby('trade_date')['30_pct'].rank(pct=True)
+        #df_all['30_pct_rank']=df_all['30_pct_rank']*10//1
 
-        #30日最高比值
-        xxx=df_all.groupby('ts_code')['real_price'].rolling(30).max().reset_index()
-        xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
-        xxx.drop(['ts_code'],axis=1,inplace=True)
+        ##30日最高比值
+        #xxx=df_all.groupby('ts_code')['real_price'].rolling(30).max().reset_index()
+        #xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
+        #xxx.drop(['ts_code'],axis=1,inplace=True)
         
-        df_all=df_all.join(xxx, lsuffix='', rsuffix='_30max')
-        #bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
-        #ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
-        df_all['30_pct_max']=(df_all['real_price']-df_all['real_price_30max'])/df_all['real_price_30max']
-        df_all['30_pct_max_rank']=df_all.groupby('trade_date')['30_pct_max'].rank(pct=True)
-        df_all['30_pct_max_rank']=df_all['30_pct_max_rank']*10//1
+        #df_all=df_all.join(xxx, lsuffix='', rsuffix='_30max')
+        ##bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
+        ##ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
+        #df_all['30_pct_max']=(df_all['real_price']-df_all['real_price_30max'])/df_all['real_price_30max']
+        #df_all['30_pct_max_rank']=df_all.groupby('trade_date')['30_pct_max'].rank(pct=True)
+        #df_all['30_pct_max_rank']=df_all['30_pct_max_rank']*10//1
 
-        df_all.drop(['30_pct','real_price_30min','30_pct_max','real_price_30max'],axis=1,inplace=True)
+        #df_all.drop(['30_pct','real_price_30min','30_pct_max','real_price_30max'],axis=1,inplace=True)
 
         df_all.drop(['change','vol'],axis=1,inplace=True)
 
@@ -580,18 +582,18 @@ class FE3(FEbase):
         df_long_all=pd.read_csv(DataSetName[2],index_col=0,header=0)
 
         df_all=pd.merge(df_data, df_adj_all, how='inner', on=['ts_code','trade_date'])
-        df_all=pd.merge(df_all, df_long_all, how='inner', on=['ts_code','trade_date'])
+        #df_all=pd.merge(df_all, df_long_all, how='inner', on=['ts_code','trade_date'])
 
         #===================================================================================================================================#
-        df_all['pe'] = df_all['pe'].fillna(9999)
-        df_all['pb'] = df_all['pb'].fillna(9999)
+        #df_all['pe'] = df_all['pe'].fillna(9999)
+        #df_all['pb'] = df_all['pb'].fillna(9999)
 
-        df_all['pe_rank']=df_all.groupby('trade_date')['pe'].rank(pct=True)
-        df_all['pb_rank']=df_all.groupby('trade_date')['pb'].rank(pct=True)        
-        df_all['pe_rank']=df_all['pe_rank']*10//1
-        df_all['pb_rank']=df_all['pb_rank']*10//1
+        #df_all['pe_rank']=df_all.groupby('trade_date')['pe'].rank(pct=True)
+        #df_all['pb_rank']=df_all.groupby('trade_date')['pb'].rank(pct=True)        
+        #df_all['pe_rank']=df_all['pe_rank']*10//1
+        #df_all['pb_rank']=df_all['pb_rank']*10//1
 
-        df_all.drop(['turnover_rate','volume_ratio','pe','pb'],axis=1,inplace=True)
+        #df_all.drop(['turnover_rate','volume_ratio','pe','pb'],axis=1,inplace=True)
 
         #print(df_all)
         #df_all.to_csv('sjefosia.csv')
@@ -756,25 +758,61 @@ class FE3(FEbase):
 
         return df_all
 
-    def real_FE2(self):
+    def real_FE(self,gap_day):
 
-        bufferstring='real_now.csv'
+        df_data=pd.read_csv('real_now.csv',index_col=0,header=0)
+        df_adj_all=pd.read_csv('real_adj_now.csv',index_col=0,header=0)
 
-        df_all=pd.read_csv(bufferstring,index_col=0,header=0)
+        df_all=pd.merge(df_data, df_adj_all, how='left', on=['ts_code','trade_date'])
+
+        #加入间隔
+        df_all['gap_day']=gap_day
+
         #df_all=pd.read_csv(bufferstring,index_col=0,header=0,nrows=100000)
     
         #df_all.drop(['change','vol'],axis=1,inplace=True)
-    
+ 
 
-        #明日幅度
-        #tm1=df_all.groupby('ts_code')['pct_chg'].shift(-1)
-        #tm2=df_all.groupby('ts_code')['pct_chg'].shift(-2)
-        #tm3=df_all.groupby('ts_code')['pct_chg'].shift(-3)
-        #df_all['tomorrow_chg']=((100+tm1)*(100+tm2)*(100+tm3)-1000000)/10000
-        #df_all['tomorrow_chg']=df_all.groupby('ts_code')['pct_chg'].shift(-1)
+        #===================================================================================================================================#
 
-        #df_all['tomorrow_chg_rank']=df_all.groupby('trade_date')['tomorrow_chg'].rank(pct=True)
-        #df_all['tomorrow_chg_rank']=df_all['tomorrow_chg_rank']*9.9//1
+        #复权后价格
+        df_all['adj_factor']=df_all['adj_factor'].fillna(0)
+        df_all['real_price']=df_all['close']*df_all['adj_factor']
+        
+        df_all['real_price']=df_all.groupby('ts_code')['real_price'].shift(1)
+        df_all['real_price']=df_all['real_price']*(1+df_all['pct_chg']/100)
+
+
+        #30日最低比值
+        xxx=df_all.groupby('ts_code')['real_price'].rolling(30).min().reset_index()
+        xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
+        xxx.drop(['ts_code'],axis=1,inplace=True)
+        
+        df_all=df_all.join(xxx, lsuffix='', rsuffix='_30min')
+        #bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
+        #ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
+        df_all['30_pct']=(df_all['real_price']-df_all['real_price_30min'])/df_all['real_price_30min']
+        df_all['30_pct_rank']=df_all.groupby('trade_date')['30_pct'].rank(pct=True)
+        df_all['30_pct_rank']=df_all['30_pct_rank']*10//1
+
+        #30日最高比值
+        xxx=df_all.groupby('ts_code')['real_price'].rolling(30).max().reset_index()
+        xxx.set_index(['level_1'], drop=True, append=False, inplace=True, verify_integrity=False)
+        xxx.drop(['ts_code'],axis=1,inplace=True)
+        
+        df_all=df_all.join(xxx, lsuffix='', rsuffix='_30max')
+        #bbb=df_all.groupby('ts_code')['real_price'].agg({'all_min':np.min, 'all_max': np.max}).reset_index()
+        #ccc=pd.merge(df_all, bbb, how='inner', on=['ts_code'])
+        df_all['30_pct_max']=(df_all['real_price']-df_all['real_price_30max'])/df_all['real_price_30max']
+        df_all['30_pct_max_rank']=df_all.groupby('trade_date')['30_pct_max'].rank(pct=True)
+        df_all['30_pct_max_rank']=df_all['30_pct_max_rank']*10//1
+
+        df_all.drop(['30_pct','real_price_30min','30_pct_max','real_price_30max'],axis=1,inplace=True)
+
+
+        #===================================================================================================================================#
+
+
         #是否停
         df_all['high_stop']=0
         df_all.loc[df_all['pct_chg']>9,'high_stop']=1
@@ -851,7 +889,7 @@ class FE3(FEbase):
         #加入前日open
         df_all['yesterday2_open']=df_all.groupby('ts_code')['open'].shift(2)
 
-        df_all.drop(['close','pre_close','pct_chg','pst_amount'],axis=1,inplace=True)
+        df_all.drop(['close','pre_close','pct_chg','pst_amount','adj_factor','real_price'],axis=1,inplace=True)
         #暂时不用的列
         df_all=df_all[df_all['high_stop']==0]
         #'tomorrow_chg'

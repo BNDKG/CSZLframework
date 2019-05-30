@@ -11,14 +11,16 @@ import FeatureEnvironment as FE
 import models
 import Dataget
 import Display
-
+import sys
 
 def backtesting():
-    #刷新数据库
-    #Dataget.Dataget.updatedaily('20190404','20190523')
 
-    #刷新复权因子
-    #Dataget.Dataget.updatedaily_adj_factor('20100101','20190523')
+    SuperGet=Dataget.Dataget()
+    ##刷新数据库
+    #SuperGet.updatedaily('20100101','20190524')
+
+    ##刷新复权因子
+    #SuperGet.updatedaily_adj_factor('20100101','20190530')
 
     #刷新经济指标
     #dataset_adj_train=Dataget.Dataget.updatedaily_long_factors('20100101','20190520')
@@ -26,11 +28,11 @@ def backtesting():
 
 
     ##选择日期
-    dataset_adj_train=Dataget.Dataget.getDataSet_adj_factor('20100101','20170101')
-    dataset_adj_test=Dataget.Dataget.getDataSet_adj_factor('20170101','20190520')
+    dataset_adj_train=SuperGet.getDataSet_adj_factor('20100101','20190520')
+    dataset_adj_test=SuperGet.getDataSet_adj_factor('20170101','20190529')
 
-    dataset_train=Dataget.Dataget.getDataSet('20100101','20170101')
-    dataset_test=Dataget.Dataget.getDataSet('20170101','20190520')
+    dataset_train=SuperGet.getDataSet('20100101','20190520')
+    dataset_test=SuperGet.getDataSet('20170101','20190529')
 
     #测试添加长期指标
 
@@ -40,8 +42,8 @@ def backtesting():
     #dataset_train=Dataget.Dataget.getDataSet('20170101','20180520')
     #dataset_test=Dataget.Dataget.getDataSet('20190101','20190501')
 
-    dataset_long_train=Dataget.Dataget.getDataSet_long_factor('20100101','20170101')
-    dataset_long_test=Dataget.Dataget.getDataSet_long_factor('20170101','20190520')
+    dataset_long_train=SuperGet.getDataSet_long_factor('20100101','20190520')
+    dataset_long_test=SuperGet.getDataSet_long_factor('20170101','20190529')
 
     #dataset_adj_test=Dataget.Dataget.getDataSet_adj_factor('20100101','20170101')
     #dataset_adj_train=Dataget.Dataget.getDataSet_adj_factor('20170101','20190520')
@@ -66,22 +68,25 @@ def backtesting():
     #展示类
     dis=Display.Display()
 
+    #dis.scatter(finalpath)
     dis.plotall(finalpath)
 
 
 
-def ztry():
-    #Dataget.Dataget.get_codeanddate_feature()
+def ztry(day_gap_flag):
+    REAL_Get=Dataget.Dataget()
+    datepath,adjpath=REAL_Get.get_history_dateset()
 
-    Dataget.Dataget.real_get_change()
+    #REAL_Get.real_get_change(datepath)
+    REAL_Get.real_get_adj_change(adjpath)
 
     #选择特征工程
-    cur_fe=FE.FE1()    
-    cur_fe.real_FE2()
+    cur_fe=FE.FE3()    
+    cur_fe.real_FE(day_gap_flag)
 
     #选择模型
     cur_model=models.LGBmodel()
-    cur_model.real_lgb_predict('DataSet20100101to20170101_FE1_LGBmodel.pkl')
+    cur_model.real_lgb_predict('DataSet20170101to20190520_FE3_LGBmodel.pkl')
 
     #展示类
     dis=Display.Display()
@@ -91,7 +96,9 @@ def ztry():
 
 if __name__ == '__main__':
 
+    #if(sys.argv[1]=='1'):
+    #    ztry(1)
+    #else:
+    #    ztry(0)
 
-
-    #ztry()
     backtesting()

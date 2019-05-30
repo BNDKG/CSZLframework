@@ -10,7 +10,7 @@ import random
 
 class Dataget(object):
     """description of class"""
-    def updatedaily(start_date,end_date):
+    def updatedaily(self,start_date,end_date):
         #增量更新
 
         #输出路径为"./Database/Dailydata.csv"
@@ -42,35 +42,42 @@ class Dataget(object):
         bufferlist=date["cal_date"]
 
         get_list=bufferlist[~bufferlist.isin(date_list_old)].values
-        first_date=get_list[0]
-        next_date=get_list[1:]
+        if len(get_list)<2:
+            if len(get_list)==1:
+                first_date=get_list[0]
+                df_all=pro.daily(trade_date=first_date)
+            else:
+                return
+        else:
+            first_date=get_list[0]
+            next_date=get_list[1:]
 
-        df_all=pro.daily(trade_date=first_date)
+            df_all=pro.daily(trade_date=first_date)
 
-        zcounter=0
-        zall=get_list.shape[0]
-        for singledate in next_date:
-            zcounter+=1
-            print(zcounter*100/zall)
+            zcounter=0
+            zall=get_list.shape[0]
+            for singledate in next_date:
+                zcounter+=1
+                print(zcounter*100/zall)
 
-            dec=5
-            while(dec>0):
-                try:
-                    time.sleep(1)
-                    df = pro.daily(trade_date=singledate)
+                dec=5
+                while(dec>0):
+                    try:
+                        time.sleep(1)
+                        df = pro.daily(trade_date=singledate)
 
-                    df_all=pd.concat([df_all,df])
+                        df_all=pd.concat([df_all,df])
 
-                    #df_last
-                    #print(df_all)
-                    break
+                        #df_last
+                        #print(df_all)
+                        break
 
-                except Exception as e:
-                    dec-=1
-                    time.sleep(5-dec)
+                    except Exception as e:
+                        dec-=1
+                        time.sleep(5-dec)
 
-            if(dec==0):
-                fsefe=1
+                if(dec==0):
+                    fsefe=1
 
         df_all=pd.concat([df_all,df_test])
         df_all[["trade_date"]]=df_all[["trade_date"]].astype(int)
@@ -82,7 +89,7 @@ class Dataget(object):
 
         dsdfsf=1
 
-    def getDataSet(start_date,end_date):
+    def getDataSet(self,start_date,end_date):
         #获取某日到某日的数据,并保存到temp中
         filename='./temp/'+'DataSet'+start_date+'to'+end_date+'.csv'
 
@@ -104,71 +111,63 @@ class Dataget(object):
                 print("错误，请先调用updatedaily或检查其他问题")
         return filename
 
-    def get_codeanddate_feature():
+    def get_history_dateset(self):
+
+        #检查目录是否存在
+        FileIO.FileIO.mkdir('./temp_real')
 
         #读取token
         f = open('token.txt')
         token = f.read()     #将txt文件的所有内容读入到字符串str中
         f.close()
-
-
         pro = ts.pro_api(token)
-
+        #生成需要的数据集
         nowTime=datetime.datetime.now()
-        delta = datetime.timedelta(days=23)
+        delta = datetime.timedelta(days=63)
         delta_one = datetime.timedelta(days=1)
+        nowTime=nowTime-delta_one
         month_ago = nowTime - delta
         month_ago_next=month_ago+delta_one
         month_fst=month_ago_next.strftime('%Y%m%d')  
         month_sec=nowTime.strftime('%Y%m%d')  
         month_thd=month_ago.strftime('%Y%m%d')      
 
-        date=pro.query('trade_cal', start_date=month_fst, end_date=month_sec)
+        #刷新数据库
+        self.updatedaily(month_fst,month_sec)
 
-        date=date[date["is_open"]==1]
-        get_list=date["cal_date"]
+        #刷新复权因子
+        self.updatedaily_adj_factor(month_fst,month_sec)
 
-        df_all=pro.daily(trade_date=month_thd)
+        savename='./temp_real/'+'dataset_'+month_fst+'_'+month_sec+'.csv'
 
-        zcounter=0
-        zall=get_list.shape[0]
-        for singledate in get_list:
-            zcounter+=1
-            print(zcounter*100/zall)
+        savename_adj='./temp_real/'+'dataset_adj_'+month_fst+'_'+month_sec+'.csv'
 
-            dec=5
-            while(dec>0):
-                try:
-                    time.sleep(1)
-                    df = pro.daily(trade_date=singledate)
+        if(os.path.exists(savename)==False):    
 
-                    df_all=pd.concat([df_all,df])
+            df_get=pd.read_csv('./Database/Dailydata.csv',index_col=0,header=0)
+            
+            df_get=df_get[df_get['trade_date']>int(month_fst)]
+            df_get=df_get[df_get['trade_date']<=int(month_sec)]
+            df_get=df_get.reset_index(drop=True)
 
-                    #df_last
-                    #print(df_all)
-                    break
+            df_get2=pd.read_csv('./Database/Daily_adj_factor.csv',index_col=0,header=0)
+            
+            df_get2=df_get2[df_get2['trade_date']>int(month_fst)]
+            df_get2=df_get2[df_get2['trade_date']<=int(month_sec)]
+            df_get2=df_get2.reset_index(drop=True)
+            df_get2.to_csv(savename_adj)
 
-                except Exception as e:
-                    dec-=1
-                    time.sleep(5-dec)
+            df_get['ts_code']=df_get['ts_code'].map(lambda x : x[:-3])
+            df_get.drop(['vol','change'],axis=1,inplace=True)
 
-            if(dec==0):
-                fsefe=1
+            
+            df_get.to_csv(savename)
 
+        return savename,savename_adj
 
-        df_all=df_all.reset_index(drop=True)
+    def real_get_change(self,path_his):
 
-
-        df_all['ts_code']=df_all['ts_code'].map(lambda x : x[:-3])
-        df_all.drop(['vol','change'],axis=1,inplace=True)
-
-        df_all.to_csv("real_buffer_2.csv")
-
-        sdads=1
-
-    def real_get_change():
-
-        df_history=pd.read_csv("real_buffer_2.csv",index_col=0,header=0)
+        df_history=pd.read_csv(path_his,index_col=0,header=0)
 
         codelistbuffer=df_history['ts_code']
         codelistbuffer=codelistbuffer.unique()
@@ -242,7 +241,16 @@ class Dataget(object):
 
         dsfesf=1
 
-    def updatedaily_adj_factor(start_date,end_date):
+    def real_get_adj_change(self,path_adj):
+
+        df_history=pd.read_csv(path_adj,index_col=0,header=0)
+
+        df_history['ts_code']=df_history['ts_code'].map(lambda x : x[:-3])
+        df_history.to_csv("real_adj_now.csv")
+
+        dsfesf=1
+
+    def updatedaily_adj_factor(self,start_date,end_date):
 
         #增量更新
 
@@ -275,35 +283,44 @@ class Dataget(object):
         bufferlist=date["cal_date"]
 
         get_list=bufferlist[~bufferlist.isin(date_list_old)].values
-        first_date=get_list[0]
-        next_date=get_list[1:]
 
-        df_all=pro.adj_factor(ts_code='', trade_date=first_date)
+        if len(get_list)<2:
+            if len(get_list)==1:
+                first_date=get_list[0]
+                df_all=pro.adj_factor(ts_code='', trade_date=first_date)
+            else:
+                return
+        else:
 
-        zcounter=0
-        zall=get_list.shape[0]
-        for singledate in next_date:
-            zcounter+=1
-            print(zcounter*100/zall)
+            first_date=get_list[0]
+            next_date=get_list[1:]
 
-            dec=5
-            while(dec>0):
-                try:
-                    time.sleep(1)
-                    df = pro.adj_factor(ts_code='', trade_date=singledate)
+            df_all=pro.adj_factor(ts_code='', trade_date=first_date)
 
-                    df_all=pd.concat([df_all,df])
+            zcounter=0
+            zall=get_list.shape[0]
+            for singledate in next_date:
+                zcounter+=1
+                print(zcounter*100/zall)
 
-                    #df_last
-                    #print(df_all)
-                    break
+                dec=5
+                while(dec>0):
+                    try:
+                        time.sleep(1)
+                        df = pro.adj_factor(ts_code='', trade_date=singledate)
 
-                except Exception as e:
-                    dec-=1
-                    time.sleep(5-dec)
+                        df_all=pd.concat([df_all,df])
 
-            if(dec==0):
-                fsefe=1
+                        #df_last
+                        #print(df_all)
+                        break
+
+                    except Exception as e:
+                        dec-=1
+                        time.sleep(5-dec)
+
+                if(dec==0):
+                    fsefe=1
 
         df_all=pd.concat([df_all,df_test])
         df_all[["trade_date"]]=df_all[["trade_date"]].astype(int)
@@ -315,7 +332,7 @@ class Dataget(object):
 
         dsdfsf=1
 
-    def getDataSet_adj_factor(start_date,end_date):
+    def getDataSet_adj_factor(self,start_date,end_date):
         #获取某日到某日的数据,并保存到temp中
         filename='./temp/'+'Daily_adj_factor'+start_date+'to'+end_date+'.csv'
 
@@ -337,7 +354,7 @@ class Dataget(object):
                 print("错误，请先调用updatedaily_adj_factor或检查其他问题")
         return filename
 
-    def updatedaily_long_factors(start_date,end_date):
+    def updatedaily_long_factors(self,start_date,end_date):
 
         #增量更新
 
@@ -412,7 +429,7 @@ class Dataget(object):
 
         dsdfsf=1
 
-    def getDataSet_long_factor(start_date,end_date):
+    def getDataSet_long_factor(self,start_date,end_date):
         #获取某日到某日的数据,并保存到temp中
         filename='./temp/'+'Daily_long_factor'+start_date+'to'+end_date+'.csv'
 

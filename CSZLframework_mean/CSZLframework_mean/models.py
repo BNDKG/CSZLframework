@@ -138,7 +138,7 @@ class LGBmodel(BaseModel):
             y_fit, y_val = y_train[train_index], y_train[test_index]
 
             lgb_model = lgb.LGBMClassifier(max_depth=-1,
-                                           n_estimators=300,
+                                           n_estimators=200,
                                            learning_rate=0.05,
                                            num_leaves=2**8-1,
                                            colsample_bytree=0.6,
@@ -200,7 +200,8 @@ class LGBmodel(BaseModel):
         data1 = pd.DataFrame(pred_test)
 
         data1['mix']=0
-        multlist=[-10,-3,-2,-1,0,0,1,2,3,10]
+        #multlist=[-10,-3,-2,-1,0,0,1,2,3,10]
+        multlist=[-8,-8,-3,-2,-1,1,2,3,7,12]
 
         for i in range(10):
             buffer=data1[i]*multlist[i]

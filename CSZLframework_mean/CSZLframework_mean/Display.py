@@ -78,6 +78,10 @@ class Display(object):
         showsource=pd.read_csv(path,index_col=0,header=0)
         databuffer=showsource['trade_date'].unique()
 
+        showsource['mix']=showsource['0']*(-8)+showsource['1']*(-8)+showsource['2']*(-3)+showsource['3']*(-2)+showsource['4']*(-1)+showsource['5']*1+showsource['6']*2+showsource['7']*3+showsource['8']*7+showsource['9']*12
+        #multlist=[-12,-5,-3,-2,-1.5,-1,-0.75,-0.5,-0.25,0,0,0.25,0.5,0.75,1,1.5,2,3,5,12]
+        
+
         changer=[]
         for curdata in databuffer:
 
