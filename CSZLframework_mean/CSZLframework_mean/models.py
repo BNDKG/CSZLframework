@@ -95,7 +95,8 @@ class LGBmodel(BaseModel):
 
         data1['mix']=0
         #multlist=[-12,-5,-3,-2,-1.5,-1,-0.75,-0.5,-0.25,0,0,0.25,0.5,0.75,1,1.5,2,3,5,12]
-        multlist=[-10,-3,-2,-1,0,0,1,2,3,10]
+        #multlist=[-10,-3,-2,-1,0,0,1,2,3,10]
+        multlist=[-8,-8,-3,-2,-1,1,2,3,7,12]
 
         for i in range(10):
             buffer=data1[i]*multlist[i]
@@ -125,7 +126,7 @@ class LGBmodel(BaseModel):
 
         train_ids = train.index.tolist()
 
-        skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=22)
+        skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=15)
         skf.get_n_splits(train_ids, y_train)
 
         train=train.values
@@ -138,7 +139,7 @@ class LGBmodel(BaseModel):
             y_fit, y_val = y_train[train_index], y_train[test_index]
 
             lgb_model = lgb.LGBMClassifier(max_depth=-1,
-                                           n_estimators=200,
+                                           n_estimators=300,
                                            learning_rate=0.05,
                                            num_leaves=2**8-1,
                                            colsample_bytree=0.6,
@@ -149,7 +150,7 @@ class LGBmodel(BaseModel):
 
             lgb_model.fit(X_fit, y_fit, eval_metric='multi_error',
                           eval_set=[(X_val, y_val)], 
-                          verbose=100, early_stopping_rounds=100)
+                          verbose=100, early_stopping_rounds=1000)
         
             joblib.dump(lgb_model,savepath)
             break
@@ -179,7 +180,7 @@ class LGBmodel(BaseModel):
 
         #return super().train(dataset)
 
-    def real_lgb_predict(self,modelpath):
+    def real_lgb_predict(self,modelpath,outputname):
         readstring='today_train.csv'
 
         #train=pd.read_csv(readstring,index_col=0,header=0,nrows=10000)
@@ -210,8 +211,8 @@ class LGBmodel(BaseModel):
         train2=train2.join(data1)
     
         print(train2)
-        readstring='todaypredict.csv'
-        train2.to_csv(readstring)
+        
+        train2.to_csv(outputname)
 
         dawd=1
 

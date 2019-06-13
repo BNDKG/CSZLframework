@@ -62,7 +62,7 @@ class Display(object):
 
         #lgb_train_2('2017')
 
-        days,show3=self.show_all_rate(path)
+        days,show3=self.show_all_rate_ens(path)
 
         #plt.plot(days,show1,c='blue',label="000001")
         #plt.plot(days,show2,c='red',label="399006")
@@ -80,8 +80,8 @@ class Display(object):
 
         showsource['mix']=showsource['0']*(-8)+showsource['1']*(-8)+showsource['2']*(-3)+showsource['3']*(-2)+showsource['4']*(-1)+showsource['5']*1+showsource['6']*2+showsource['7']*3+showsource['8']*7+showsource['9']*12
         #multlist=[-12,-5,-3,-2,-1.5,-1,-0.75,-0.5,-0.25,0,0,0.25,0.5,0.75,1,1.5,2,3,5,12]
-        
-
+        showsource['mix_rank']=showsource.groupby('trade_date')['mix'].rank(ascending=False)
+        showsource['next_chg']=showsource.groupby('ts_code')['tomorrow_chg'].shift(-1)
         changer=[]
         for curdata in databuffer:
 
@@ -90,7 +90,7 @@ class Display(object):
             #b=cur_show.sort_values(by="9" , ascending=True)
             #d=b.head(10)
             #e=d.sort_values(by="mix" , ascending=True)
-        
+            
 
             #b=cur_show[cur_show['mix']>0.40]
             average=b.head(1)['tomorrow_chg'].mean()
@@ -100,7 +100,43 @@ class Display(object):
 
 
         days2,show=self.standard_show(changer,day_interval=1)
+        showsource=showsource[showsource['mix_rank']<10]
+        showsource.to_csv('seefef.csv')
+        return days2,show
 
+    def show_all_rate_ens(self,path):
+        showsource=pd.read_csv(path,index_col=0,header=0)
+        databuffer=showsource['trade_date'].unique()
+
+        showsource2=pd.read_csv('./temp/17_1819_0000.csv',index_col=0,header=0)
+        showsource3=pd.read_csv('./temp/17_1819_1111.csv',index_col=0,header=0)
+        showsource4=pd.read_csv('./temp/17_1819_2222.csv',index_col=0,header=0)
+        #print(showsource['mix'])
+        showsource['mix']=showsource['mix']*1+showsource2['mix']*0+showsource3['mix']*0+showsource4['mix']*0
+        print(showsource['mix'])
+        multlist=[-12,-5,-3,-2,-1.5,-1,-0.75,-0.5,-0.25,0,0,0.25,0.5,0.75,1,1.5,2,3,5,12]
+        showsource['mix_rank']=showsource.groupby('trade_date')['mix'].rank(ascending=False)
+        showsource['next_chg']=showsource.groupby('ts_code')['tomorrow_chg'].shift(-1)
+        changer=[]
+        for curdata in databuffer:
+
+            cur_show=showsource[showsource["trade_date"]==curdata]
+            b=cur_show.sort_values(by="mix" , ascending=False)
+            #b=cur_show.sort_values(by="9" , ascending=True)
+            #d=b.head(10)
+            #e=d.sort_values(by="mix" , ascending=True)
+            
+
+            #b=cur_show[cur_show['mix']>0.40]
+            average=b.head(1)['tomorrow_chg'].mean()
+            changer.append(average)
+
+            adwda=1
+
+
+        days2,show=self.standard_show(changer,day_interval=1)
+        showsource=showsource[showsource['mix_rank']<10]
+        showsource.to_csv('seefef.csv')
         return days2,show
 
     def standard_show(self,changer,first_base_income=100000,day_interval=2,label="自己"):
@@ -124,19 +160,27 @@ class Display(object):
 
     def show_today(self):
 
-        show=pd.read_csv('todaypredict.csv',index_col=0,header=0)
-        datamax=show['trade_date'].max()
-        #datamax=20190408
+        show=pd.read_csv('out1.csv',index_col=0,header=0)
+        show2=pd.read_csv('out2.csv',index_col=0,header=0)
+        show3=pd.read_csv('out3.csv',index_col=0,header=0)
+        show4=pd.read_csv('out4.csv',index_col=0,header=0)
 
-        show=show[show['trade_date']==datamax]
+        show['9']=show['9']+show2['9']+show3['9']+show4['9']
+        show['mix']=show['mix']+show2['mix']+show3['mix']+show4['mix']
+
+
+        #datamax=show['trade_date'].max()
+        ##datamax=20190408
+
+        #show=show[show['trade_date']==datamax]
 
         show=show[['ts_code','0','9','mix']]
 
         #ascending表示升降序
         b=show.sort_values(by="mix" , ascending=False) 
         c=show.sort_values(by="9" , ascending=False) 
-        final_mix=b.head(20)
-        final_9=c.head(20)
+        final_mix=b.head(10)
+        final_9=c.head(10)
 
         arr=[600461,603389,300384]
         final_have=show[show['ts_code'].isin(arr)]

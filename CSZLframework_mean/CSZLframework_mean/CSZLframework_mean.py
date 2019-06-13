@@ -28,11 +28,11 @@ def backtesting():
 
 
     ##选择日期
-    dataset_adj_train=SuperGet.getDataSet_adj_factor('20100101','20190520')
-    dataset_adj_test=SuperGet.getDataSet_adj_factor('20170101','20190529')
+    dataset_adj_train=SuperGet.getDataSet_adj_factor('20120101','20180101')
+    dataset_adj_test=SuperGet.getDataSet_adj_factor('20180101','20190601')
 
-    dataset_train=SuperGet.getDataSet('20100101','20190520')
-    dataset_test=SuperGet.getDataSet('20170101','20190529')
+    dataset_train=SuperGet.getDataSet('20120101','20180101')
+    dataset_test=SuperGet.getDataSet('20180101','20190601')
 
     #测试添加长期指标
 
@@ -42,8 +42,8 @@ def backtesting():
     #dataset_train=Dataget.Dataget.getDataSet('20170101','20180520')
     #dataset_test=Dataget.Dataget.getDataSet('20190101','20190501')
 
-    dataset_long_train=SuperGet.getDataSet_long_factor('20100101','20190520')
-    dataset_long_test=SuperGet.getDataSet_long_factor('20170101','20190529')
+    dataset_long_train=SuperGet.getDataSet_long_factor('20120101','20180101')
+    dataset_long_test=SuperGet.getDataSet_long_factor('20180101','20190601')
 
     #dataset_adj_test=Dataget.Dataget.getDataSet_adj_factor('20100101','20170101')
     #dataset_adj_train=Dataget.Dataget.getDataSet_adj_factor('20170101','20190520')
@@ -77,7 +77,7 @@ def ztry(day_gap_flag):
     REAL_Get=Dataget.Dataget()
     datepath,adjpath=REAL_Get.get_history_dateset()
 
-    #REAL_Get.real_get_change(datepath)
+    REAL_Get.real_get_change(datepath)
     REAL_Get.real_get_adj_change(adjpath)
 
     #选择特征工程
@@ -86,7 +86,10 @@ def ztry(day_gap_flag):
 
     #选择模型
     cur_model=models.LGBmodel()
-    cur_model.real_lgb_predict('DataSet20170101to20190520_FE3_LGBmodel.pkl')
+    cur_model.real_lgb_predict('lgb1.pkl','out1.csv')
+    cur_model.real_lgb_predict('lgb2.pkl','out2.csv')
+    cur_model.real_lgb_predict('lgb3.pkl','out3.csv')
+    cur_model.real_lgb_predict('lgb4.pkl','out4.csv')
 
     #展示类
     dis=Display.Display()
@@ -96,9 +99,9 @@ def ztry(day_gap_flag):
 
 if __name__ == '__main__':
 
-    #if(sys.argv[1]=='1'):
-    #    ztry(1)
-    #else:
-    #    ztry(0)
+    if(sys.argv[1]=='1'):
+        ztry(1)
+    else:
+        ztry(0)
 
     backtesting()
