@@ -29,6 +29,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CSZLframework_mean.py" />
+    <Compile Include="CSZLframework_mean_upload.py" />
     <Compile Include="Dataget.py">
       <SubType>Code</SubType>
     </Compile>

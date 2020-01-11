@@ -331,3 +331,4 @@ ASALocalRun/
 *.csv
 /CSZLframework_mean/CSZLframework_mean/token.txt
 *.pkl
+*.xlsx
